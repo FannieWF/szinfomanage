@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+    <head>
+        <title>登录 | 网站信息管理平台</title>
+        <meta charset="UTF-8">
+        {% load staticfiles %}
+        <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+    </head>
+    <body class=" login">
+        <div id="container">
+            <div id="header">
+                <div id="branding">
+                    <h1 id="site-name">网站信息管理平台</h1>
+                </div>
+            </div>
+            <div id="content" class="colM">
+                <div id="content-main">
+                    <form action="{% url 'infomanage:login' %}" method="post" id="login-form">
+                        {% csrf_token %}
+                        <input type="hidden">
+                        {{ login_error }}
+                        <div class="form-row">
+                            <label class="required" for="id_username">用户名:</label>
+                            <input type="text" name="username" autofocus="" required="required" id="id_username">
+                        </div>
+                        <div class="form-row">
+                            <label class="required" for="id_password">密码:</label>
+                            <input type="password" name="password" required="required" id="id_password">
+                            <input type="hidden">
+                        </div>
+                        <div class="submit-row">
+                            <input type="submit" value="登录">
+                        </div>
+                    </form>
+                </div>
+                <br class="clear">
+            </div>
+            <div id="footer"></div>
+        </div>
+    </body>
+</html>

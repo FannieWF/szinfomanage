@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>网站信息管理平台</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/basic_layout.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'H-ui/static/h-ui/css/H-ui.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'H-ui/static/h-ui.admin/css/H-ui.admin.css' %} " />
+    <link rel="stylesheet" type="text/css" href="{% static 'H-ui/lib/Hui-iconfont/1.0.8/iconfont.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'H-ui/static/h-ui.admin/skin/green/skin.css' %}" id="skin" />
+    <link rel="stylesheet" type="text/css" href="{% static 'H-ui/static/h-ui.admin/css/style.css' %}" />
+
+    <script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'H-ui/lib/jquery/1.9.1/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'H-ui/lib/layer/2.4/layer.js' %}"></script>
+    <script type="text/javascript" src="{% static 'H-ui/static/h-ui/js/H-ui.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'H-ui/static/h-ui.admin/js/H-ui.admin.js' %}"></script>
+    <script type="text/javascript" src="{% static 'H-ui/lib/jquery.contextmenu/jquery.contextmenu.r2.js' %}"></script>
+</head>
+<body>
+    <header class="navbar-wrapper">
+        <div class="navbar navbar-fixed-top">
+            <div class="container-fluid cl">
+                <div>
+                    <a class="logo navbar-logo f-l mr-10 hidden-xs" href="#">信息管理平台</a>
+                    <a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="javascript:;">&#xe667;</a>
+                </div>
+                <div style="text-align: center">
+                    <nav class="nav navbar-nav">
+                        <ul>
+                            <li class="navbar-levelone current"><a href="{% url 'infomanage:bjjydy' %}">北京教育(德育)</a></li>
+                            <li class="navbar-levelone"><a href="{% url 'infomanage:kt' %}">课题管理</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div>
+                    <nav id="Hui-userbar" class="nav navbar-nav navbar-userbar hidden-xs">
+                        <ul class="cl">
+                            <li class="dropDown dropDown_hover">
+                                <a href="#" class="dropDown_A">{{ user.username }} <i class="Hui-iconfont">&#xe6d5;</i>
+                                </a>
+                                <ul class="dropDown-menu menu radius box-shadow">
+                                    <li><a href="{% url 'infomanage:bjjydy' %}">修改密码</a></li>
+                                    <li><a href="{% url 'infomanage:logout' %}">注销</a></li>
+                                </ul>
+                            </li>
+                            <li id="Hui-skin" class="dropDown right dropDown_hover">
+                                <a href="javascript:;" class="dropDown_A" title="换肤">
+                                    <i class="Hui-iconfont" style="font-size:18px">&#xe62a;</i>
+                                </a>
+                                <ul class="dropDown-menu menu radius box-shadow">
+                                    <li><a href="javascript:;" data-val="default" title="默认（黑色）">默认（黑色）</a></li>
+                                    <li><a href="javascript:;" data-val="blue" title="蓝色">蓝色</a></li>
+                                    <li><a href="javascript:;" data-val="green" title="绿色">绿色</a></li>
+                                    <li><a href="javascript:;" data-val="red" title="红色">红色</a></li>
+                                    <li><a href="javascript:;" data-val="yellow" title="黄色">黄色</a></li>
+                                    <li><a href="javascript:;" data-val="orange" title="橙色">橙色</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+            </div>
+        </div>
+    </header>
+    <div class="page-container" style="width: 80%; margin-left: auto; margin-right: auto;">
+        <div class="text-c">
+            <!--搜索-->
+            <form method="GET" id="searchform" action="{% url 'infomanage:bjjydy' %}">
+                {% csrf_token %}
+                <input type="text" placeholder="年份期数" class="input-text" style="width: 230px; margin-bottom: 10px;" name="year_and_issue">
+                <input type="text" placeholder="作者" class="input-text" style="width: 230px; margin-bottom: 10px;" name="authors">
+                <input type="text" placeholder="所在学校" class="input-text" style="width: 230px; margin-bottom: 10px;" name="school">
+                <input type="text" placeholder="文章名称" class="input-text" style="width: 230px; margin-bottom: 10px;" name="title">
+                <input type="text" placeholder="所在栏目" class="input-text" style="width: 230px; margin-bottom: 10px;" name="section">
+                <button name="" id="" class="btn btn-success" type="submit" style="margin-bottom: 10px;"><i class="Hui-iconfont">&#xe665;</i> 检索 </button>
+            </form>
+        </div>
+        <div class="cl pd-5 bg-1 bk-gray mt-20">
+            <!--添加文章按钮-->
+            <span class="l">
+                <a class="btn btn-primary radius" data-toggle="modal" data-target="#articleAdd">
+                    <i class="Hui-iconfont">&#xe600;</i>
+                    添加文章
+                </a>
+            </span>
+            <span class="r">
+                <!--页面导航-->
+                    共<span><strong>{{ cur_bjjydy_article_list.paginator.num_pages }}</strong></span>页，
+                    <span><strong>{{ cur_bjjydy_article_list.paginator.count }}</strong></span>条记录
+                    {% if cur_bjjydy_article_list.has_previous %}
+                    <a href="?page=1" class="paginate_button">首页</a>
+                    <a href="?page={{ cur_bjjydy_article_list.previous_page_number }}" aria-label="Previous" class="paginate_button">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                    {% endif %}
+                    {% for page in cur_bjjydy_article_list.paginator.page_range_ext %}
+                    {% ifequal page cur_bjjydy_article_list.number %}
+                    <a href="?page={{ page }}" class="active paginate_button">{{ page }}</a>
+                    {% else %}
+                    <a href="?page={{ page }}" class="paginate_button">{{ page }}</a>
+                    {% endifequal %}
+                    {% endfor %}
+                    {% if cur_bjjydy_article_list.has_next %}
+                    <a class="paginate_button" href="?page={{ cur_bjjydy_article_list.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                    <a class="paginate_button" href="?page={{ cur_bjjydy_article_list.paginator.num_pages }}">末页</a>
+                    {% endif %}
+            </span>
+        </div>
+        <div class="mt-20">
+            <form id="articles_check" method="post" action="{% url 'infomanage:article_batch_rem' %}">
+                {%csrf_token%}
+                    <!--文章列表-->
+                    <table class="table  table-border table-bordered table-bg table-hover table-sort table-responsive">
+                        <thead>
+                            <tr class="text-c">
+                                <th width="30">
+                                    <input type="checkbox" id="all_checkbox" onclick="selectOrClearAllCheckbox();" />
+                                </th>
+                                <th>文章名称</th>
+                                <th>年份期数</th>
+                                <th>作者</th>
+                                <th>所在学校</th>
+                                <th>所在栏目</th>
+                                <th>页码</th>
+                                <th>备注</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                    {% if cur_bjjydy_article_list %}
+                        <tbody>
+                        {% for article in cur_bjjydy_article_list %}
+                            <tr class="text-c">
+                                <td>
+                                    <input type="checkbox" name="article_check" value="{{ article.id }}" />
+                                </td>
+                                <td>{{ article.title }}</td>
+                                <td>{{ article.year_and_issue }}</td>
+                                <td>{{ article.authors }}</td>
+                                <td>{{ article.school }}</td>
+                                <td>{{ article.section }}</td>
+                                <td>{{ article.page_number }}</td>
+                                <td>{{ article.remark }}</td>
+                                <td>
+                                    <a href="{% url 'infomanage:article_change' article.id %}" class="ml-5" title="修改" style="text-decoration:none">
+                                        <i class="Hui-iconfont">&#xe6df;</i>
+                                    </a>
+                                    <a onclick="rem_confirm({{ article.id }});" class="ml-5" title="删除" style="text-decoration:none">
+                                        <i class="Hui-iconfont">&#xe6e2;</i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    {% else %}
+                    <p>没有相关信息。</p>
+                    {% endif %}
+                    </table>
+            </form>
+        </div>
+        <div class="cl pd-5 bg-1 bk-gray mt-20">
+            <span class="l">
+                <a class="btn btn-danger radius" onclick="batch_rem_confirm();">
+                    <i class="Hui-iconfont">&#xe6e2;</i>批量删除
+                </a>
+            </span>
+        </div>
+    </div>
+
+    <!--添加文章模态框(Modal)-->
+    <div class="modal fade" id="articleAdd" role="dialog" arai-labelledby="articleAddLabel" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                    </button>
+                    <h4 class="modal-title" id="articleAddLabel">
+                        添加文章信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form id="article-add" method="post" action="{% url 'infomanage:bjjydy' %}" class="form form-horizontal">
+                        {% csrf_token %}
+                        {% for item in article_form %}
+                        <div class="row cl">
+                            {% if item.field.required %}
+                            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>{{ item.label }}：</label>
+                            <div class="formControls col-xs-8 col-sm-9">
+                                <input type="{{ item.field.widget.input_type }}" class="input-text" id="{{item.id_for_label}}" name="{{item.html_name}}" required="required">
+                            </div>
+                            {% else %}
+                            <label class="form-label col-xs-4 col-sm-2">{{ item.label }}：</label>
+                            <div class="formControls col-xs-8 col-sm-9">
+                                <input type="{{ item.field.widget.input_type }}" class="input-text" id="{{item.id_for_label}}" name="{{item.html_name}}">
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        <div id="add_save" class="row cl" style="text-align: center">
+                            <input type="submit" name="保存" value="&nbsp;&nbsp;保存&nbsp;&nbsp;" class="btn btn-primary radius" id="add_save_btn" >
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
